@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Modern Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        /* Theme toggle button styles */
+#themeToggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+
+#themeToggle:hover {
+    background: rgba(100, 108, 255, 0.1);
+    border-radius: 8px;
+}
+
+.theme-icon {
+    font-size: 1.2rem;
+}
+
+.theme-label {
+    font-size: 0.9rem;
+}
+        :root {
+            --bg-dark: rgba(20, 20, 30, 0.7);
+            --bg-light: rgba(240, 240, 250, 0.7);
+            --text-dark: #ffffff;
+            --text-light: #333333;
+            --accent: #646cff;
+            --accent-hover: #535bf2;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        body[data-theme="light"] {
+            background: linear-gradient(135deg, #e0e0f0 0%, #d0d0e0 100%);
+            color: var(--text-light);
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 100%;
+        }
+
+        .glass-panel {
+            background: rgba(30, 30, 50, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        body[data-theme="light"] .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-weight: 500;
+        }
+
+        /* Scroll containers */
+        .scroll-x-only {
+            overflow-x:auto;
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .normal-view {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Graph controls */
+        .graph-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .graph-buttons {
+            
+            display: flex;
+            gap: 2rem;
+        }
+
+        button, .graph-buttons a {
+            padding: 0.5rem 1rem;
+            background: rgba(100, 108, 255, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        button:hover, .graph-buttons a:hover {
+            background: rgba(100, 108, 255, 0.3);
+            border-color: var(--accent-hover);
+            color: var(--accent-hover);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+            background: rgba(100, 108, 255, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(100, 108, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .theme-icon {
+            font-size: 1.5rem;
+        }
+        .date-range-selector {
+        display: flex;
+        align-items: center;
+    }
+    
+    .date-input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .date-input {
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: var(--text-dark);
+        min-width: 120px;
+    }
+    
+    body[data-theme="light"] .date-input {
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-light);
+    }
+    
+    .date-submit {
+        padding: 0.5rem 1rem;
+        background: rgba(100, 108, 255, 0.2);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        color: var(--accent);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .date-submit:hover {
+        background: rgba(100, 108, 255, 0.3);
+    }
+    .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(20, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-logo h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover {
+            background: rgba(100, 108, 255, 0.2);
+            color: var(--accent);
+        }
+
+        /* Adjust container to account for navbar */
+        .container {
+            padding-top: 1rem; /* Reduced from 2rem */
+        }
+
+        /* Move theme toggle down */
+        .theme-toggle {
+            top: 5rem; /* Adjusted from 1.5rem */
+        }
+/* Navbar styles */
+.top-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(20, 20, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dark);
+    font: inherit;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(100, 108, 255, 0.2);
+}
+
+.theme-icon {
+    font-size: 1.2rem;
+}
+
+.theme-label {
+    font-size: 0.9rem;
+}
+
+/* Light theme button colors */
+body[data-theme="light"] .theme-toggle-btn {
+    color: var(--text-light);
+}
+
+/* Active/hover states */
+#themeToggle:hover {
+    background: rgba(100, 108, 255, 0.1);
+    border-radius: 8px;
+}
+
+/* Light theme adjustments */
+body[data-theme="light"] .top-navbar {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+    </style>
+</head>
+<body>
+     <nav class="top-navbar">
+    <div class="nav-logo">
+        <img src="/static/IITT_InIf_svg2-01.png" alt="Logo">
+        <h1>Navavishkar Hub</h1>
+    </div>
+    <div class="nav-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/about" class="nav-link">About</a>
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <span class="theme-icon">🌓</span>
+            <span class="theme-label">Theme</span>
+        </button>
+    </div>
+</nav>
+   
+
+ <!-- Top Graph Section with Date Picker -->
+ <div class="container">
+        <!-- Top Graph Section with Date Picker -->
+        <div class="glass-panel" style="min-height: 500px;">
+            <div class="graph-header">
+                <h2>Daily Data</h2>
+                <div class="date-selector">
+                    <form method="POST" id="dateForm">
+                        <div class="date-input-group">
+                            <input type="text" class="date-input" id="startDate" name="start_date" 
+                                   value="{{ start_date }}" placeholder="Start Date">
+                            <span>to</span>
+                            <input type="text" class="date-input" id="endDate" name="end_date" 
+                                   value="{{ end_date }}" placeholder="End Date">
+                            <button type="submit" class="date-submit">Apply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="scroll-x-only" style="height: 800px;">
+                <div id="top-graph"></div>
+            </div>
+        </div>
+        <!-- Middle Graph -->
+    <div class="glass-panel">
+    <div class="graph-header">
+        <h2>Day Graph</h2>
+        <div class="date-range-selector">
+            <form method="POST" id="dateForm">
+                <input type="text" class="date-input" id="selectedDate" name="selected_date" 
+                       value="{{ selected_date }}" placeholder="Select Date">
+                <button type="submit" class="date-submit">Load</button>
+            </form>
+        </div>
+    </div>
+    <div class="normal-view" style="height: 800px;">
+        <div id="mid-graph"></div>
+    </div>
+</div>
+
+        <!-- Bottom Graph -->
+        <div class="glass-panel">
+            <div class="graph-header">
+                <h2>Predicted Graph</h2>
+                <div class="graph-buttons">
+                    <a href="/set_mode/lines" onclick="updateBotGraph(event)">Line</a>
+                    <a href="/set_mode/markers" onclick="updateBotGraph(event)">Scatter</a>
+                    <a href="/set_mode/lines+markers" onclick="updateBotGraph(event)">Both</a>
+                    <a href="/set_type/bar" onclick="updateBotGraph(event)">Bar</a>
+                </div>
+            </div>
+            <div class="normal-view" style="height: 500px;">
+                <div id="bot-graph"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Functionality (only one implementation needed)
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Update the theme on the body
+            document.body.setAttribute('data-theme', newTheme);
+            
+            // Update all graphs with the new theme
+            updateAllGraphs(newTheme === 'dark');
+            
+            // Save preference to localStorage
+            localStorage.setItem('themePreference', newTheme);
+        });
+
+        // Initialize theme from localStorage or default to dark
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('themePreference') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateAllGraphs(savedTheme === 'dark');
+        }
+
+        // Update graphs function
+        function updateAllGraphs(isDarkMode) {
+            const bgColor = isDarkMode ? 'rgba(20, 20, 30, 0.7)' : 'rgba(240, 240, 250, 0.7)';
+            const textColor = isDarkMode ? '#ffffff' : '#333333';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            // Update each graph's theme
+            ['top-graph', 'mid-graph', 'bot-graph'].forEach(graphId => {
+                const graph = document.getElementById(graphId);
+                if (graph) {
+                    const data = JSON.parse(graph.getAttribute('data-plot'));
+                    data.layout.plot_bgcolor = bgColor;
+                    data.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+                    data.layout.font = {color: textColor};
+                    data.layout.xaxis.gridcolor = gridColor;
+                    data.layout.yaxis.gridcolor = gridColor;
+                    Plotly.react(graphId, data.data, data.layout);
+                }
+            });
+        }
+
+        // Call this when the page loads
+        window.addEventListener('DOMContentLoaded', initializeTheme);
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            
+            // Update graphs with new theme
+            updateAllGraphs(newTheme === 'dark');
+        });
+
+        // Parse JSON strings to objects
+        let topData = JSON.parse('{{ top|safe }}');
+        let midData = JSON.parse('{{ mid|safe }}');
+        let botData = JSON.parse('{{ bot|safe }}');
+        
+        // Initial graph rendering
+        Plotly.newPlot('top-graph', topData.data, topData.layout);
+        Plotly.newPlot('mid-graph', midData.data, midData.layout);
+        Plotly.newPlot('bot-graph', botData.data, botData.layout);
+        
+        // Function to update graphs with new theme
+        function updateAllGraphs(darkMode) {
+            const bgColor = darkMode ? 'rgba(20, 20, 30, 0.7)' : 'rgba(240, 240, 250, 0.7)';
+            const textColor = darkMode ? '#ffffff' : '#333333';
+            const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            [topData, midData, botData].forEach(data => {
+                data.layout.plot_bgcolor = bgColor;
+                data.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+                data.layout.font.color = textColor;
+                data.layout.xaxis.gridcolor = gridColor;
+                data.layout.yaxis.gridcolor = gridColor;
+            });
+            
+            Plotly.react('top-graph', topData.data, topData.layout);
+            Plotly.react('mid-graph', midData.data, midData.layout);
+            Plotly.react('bot-graph', botData.data, botData.layout);
+        }
+        
+        // Function to handle button clicks and update graph
+        function updateBotGraph(event) {
+            event.preventDefault();
+            fetch(event.target.href)
+                .then(response => response.json())
+                .then(data => {
+                    botData = data;
+                    Plotly.react('bot-graph', data.data, data.layout);
+                });
+        }
+        
+        // Scroll top graph to right on load
+        window.onload = () => {
+            document.querySelector('.scroll-x-only').scrollLeft = 10000;
+        };
+        // Initialize date pickers
+    flatpickr("#startDate", {
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ start_date }}",
+        maxDate: "{{ end_date }}"
+    });
+    
+    flatpickr("#endDate", {
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ end_date }}",
+        minDate: "{{ start_date }}"
+    });
+    
+    // Update the mid graph when dates change
+    document.getElementById('dateForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/', {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Parse the new HTML and update the mid graph
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newMidData = JSON.parse(doc.getElementById('mid-graph').getAttribute('data-plot'));
+            Plotly.react('mid-graph', newMidData.data, newMidData.layout);
+        });
+    });
+     // Initialize date picker
+    flatpickr("#selectedDate", {
+        dateFormat: "Y-m-d",
+        defaultDate: "{{ selected_date }}",
+        maxDate: "today"
+    });
+
+    // Update the top graph when date changes
+    document.getElementById('dateForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/', {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Parse the new HTML and update the top graph
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newTopData = JSON.parse(doc.getElementById('top-graph').getAttribute('data-plot'));
+            Plotly.react('top-graph', newTopData.data, newTopData.layout);
+        });
+    });
+    // Theme toggle functionality - ONLY KEEP THIS ONE
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        
+        // Update graphs with new theme
+        updateAllGraphs(newTheme === 'dark');
+    });
+    </script>
+</body>
+</html>

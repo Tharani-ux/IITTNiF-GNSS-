@@ -1,0 +1,138 @@
+body {
+    background-color: #0e0e0e;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+}
+
+.section {
+    background-color: #1a1a1a;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 8px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.scroll-x {
+    overflow-x: auto;
+    
+    width: 100%;
+}
+
+/* Right align for middle and bottom graphs */
+.right-align {
+    display: flex;
+    justify-content: flex-end;
+}
+.scroll-x {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+.right-align {
+    display: flex;
+    justify-content: flex-end;
+}
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+    padding-right: 20px;
+}
+
+.button-group button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-group button:hover {
+    background-color: #666;
+}
+.graph-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+.graph-buttons button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.graph-buttons button:hover {
+    background-color: #555;
+}
+.graph-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.graph-buttons button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.graph-buttons button:hover {
+    background-color: #555;
+}
+.graph-buttons {
+  position:fixed;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+
+.graph-buttons button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.graph-buttons button:hover {
+  background-color: #555;
+}
