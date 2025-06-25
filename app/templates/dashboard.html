@@ -7,7 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        /* Theme toggle button styles */
+        /* ... (all your existing CSS remains unchanged) ... */
+         /* Theme toggle button styles */
 #themeToggle {
     background: transparent;
     border: none;
@@ -314,40 +315,54 @@ body[data-theme="light"] .top-navbar {
     background: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
+        /* ✅ Response Message Styling */
+        #responseMessage {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: rgba(100, 108, 255, 0.9);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-     <nav class="top-navbar">
-    <div class="nav-logo">
-        <img src="/static/IITT_InIf_svg2-01.png" alt="Logo">
-        <h1>Navavishkar Hub</h1>
-    </div>
-    <div class="nav-menu">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/about" class="nav-link">About</a>
-        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
-            <span class="theme-icon">🌓</span>
-            <span class="theme-label">Theme</span>
-        </button>
-    </div>
-</nav>
-   
+    <!-- ✅ Response Message Element -->
+    <div id="responseMessage"></div>
 
- <!-- Top Graph Section with Date Picker -->
- <div class="container">
-        <!-- Top Graph Section with Date Picker -->
+    <!-- Existing Layout Below -->
+    <nav class="top-navbar">
+        <div class="nav-logo">
+            <img src="/static/IITT_InIf_svg2-01.png" alt="Logo">
+            <h1>Navavishkar Hub</h1>
+        </div>
+        <div class="nav-menu">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/about" class="nav-link">About</a>
+            <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                <span class="theme-icon">🌓</span>
+                <span class="theme-label">Theme</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Top Graph -->
         <div class="glass-panel" style="min-height: 500px;">
             <div class="graph-header">
                 <h2>Daily Data</h2>
                 <div class="date-selector">
                     <form method="POST" id="dateForm">
                         <div class="date-input-group">
-                            <input type="text" class="date-input" id="startDate" name="start_date" 
-                                   value="{{ start_date }}" placeholder="Start Date">
+                            <input type="text" class="date-input" id="startDate" name="start_date" value="{{ start_date }}" placeholder="Start Date">
                             <span>to</span>
-                            <input type="text" class="date-input" id="endDate" name="end_date" 
-                                   value="{{ end_date }}" placeholder="End Date">
+                            <input type="text" class="date-input" id="endDate" name="end_date" value="{{ end_date }}" placeholder="End Date">
                             <button type="submit" class="date-submit">Apply</button>
                         </div>
                     </form>
@@ -357,22 +372,22 @@ body[data-theme="light"] .top-navbar {
                 <div id="top-graph"></div>
             </div>
         </div>
+
         <!-- Middle Graph -->
-    <div class="glass-panel">
-    <div class="graph-header">
-        <h2>Day Graph</h2>
-        <div class="date-range-selector">
-            <form method="POST" id="dateForm">
-                <input type="text" class="date-input" id="selectedDate" name="selected_date" 
-                       value="{{ selected_date }}" placeholder="Select Date">
-                <button type="submit" class="date-submit">Load</button>
-            </form>
+        <div class="glass-panel">
+            <div class="graph-header">
+                <h2>Day Graph</h2>
+                <div class="date-range-selector">
+                    <form method="POST" id="dateForm">
+                        <input type="text" class="date-input" id="selectedDate" name="selected_date" value="{{ selected_date }}" placeholder="Select Date">
+                        <button type="submit" class="date-submit">Load</button>
+                    </form>
+                </div>
+            </div>
+            <div class="normal-view" style="height: 800px;">
+                <div id="mid-graph"></div>
+            </div>
         </div>
-    </div>
-    <div class="normal-view" style="height: 800px;">
-        <div id="mid-graph"></div>
-    </div>
-</div>
 
         <!-- Bottom Graph -->
         <div class="glass-panel">
@@ -392,78 +407,40 @@ body[data-theme="light"] .top-navbar {
     </div>
 
     <script>
-        // Theme Toggle Functionality (only one implementation needed)
-        document.getElementById('themeToggle').addEventListener('click', function() {
+        // ✅ Response Message Handler
+        function showResponseMessage(msg) {
+            const box = document.getElementById('responseMessage');
+            box.textContent = msg;
+            box.style.display = 'block';
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 3000);
+        }
+
+        // Theme Toggle
+        document.getElementById('themeToggle').addEventListener('click', function () {
             const currentTheme = document.body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            // Update the theme on the body
             document.body.setAttribute('data-theme', newTheme);
-            
-            // Update all graphs with the new theme
             updateAllGraphs(newTheme === 'dark');
-            
-            // Save preference to localStorage
             localStorage.setItem('themePreference', newTheme);
         });
 
-        // Initialize theme from localStorage or default to dark
         function initializeTheme() {
             const savedTheme = localStorage.getItem('themePreference') || 'dark';
             document.body.setAttribute('data-theme', savedTheme);
             updateAllGraphs(savedTheme === 'dark');
         }
 
-        // Update graphs function
-        function updateAllGraphs(isDarkMode) {
-            const bgColor = isDarkMode ? 'rgba(20, 20, 30, 0.7)' : 'rgba(240, 240, 250, 0.7)';
-            const textColor = isDarkMode ? '#ffffff' : '#333333';
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            
-            // Update each graph's theme
-            ['top-graph', 'mid-graph', 'bot-graph'].forEach(graphId => {
-                const graph = document.getElementById(graphId);
-                if (graph) {
-                    const data = JSON.parse(graph.getAttribute('data-plot'));
-                    data.layout.plot_bgcolor = bgColor;
-                    data.layout.paper_bgcolor = 'rgba(0,0,0,0)';
-                    data.layout.font = {color: textColor};
-                    data.layout.xaxis.gridcolor = gridColor;
-                    data.layout.yaxis.gridcolor = gridColor;
-                    Plotly.react(graphId, data.data, data.layout);
-                }
-            });
-        }
-
-        // Call this when the page loads
-        window.addEventListener('DOMContentLoaded', initializeTheme);
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', newTheme);
-            
-            // Update graphs with new theme
-            updateAllGraphs(newTheme === 'dark');
-        });
-
-        // Parse JSON strings to objects
         let topData = JSON.parse('{{ top|safe }}');
         let midData = JSON.parse('{{ mid|safe }}');
         let botData = JSON.parse('{{ bot|safe }}');
-        
-        // Initial graph rendering
-        Plotly.newPlot('top-graph', topData.data, topData.layout);
-        Plotly.newPlot('mid-graph', midData.data, midData.layout);
-        Plotly.newPlot('bot-graph', botData.data, botData.layout);
-        
-        // Function to update graphs with new theme
+
         function updateAllGraphs(darkMode) {
             const bgColor = darkMode ? 'rgba(20, 20, 30, 0.7)' : 'rgba(240, 240, 250, 0.7)';
             const textColor = darkMode ? '#ffffff' : '#333333';
             const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            
+
             [topData, midData, botData].forEach(data => {
                 data.layout.plot_bgcolor = bgColor;
                 data.layout.paper_bgcolor = 'rgba(0,0,0,0)';
@@ -471,13 +448,12 @@ body[data-theme="light"] .top-navbar {
                 data.layout.xaxis.gridcolor = gridColor;
                 data.layout.yaxis.gridcolor = gridColor;
             });
-            
+
             Plotly.react('top-graph', topData.data, topData.layout);
             Plotly.react('mid-graph', midData.data, midData.layout);
             Plotly.react('bot-graph', botData.data, botData.layout);
         }
-        
-        // Function to handle button clicks and update graph
+
         function updateBotGraph(event) {
             event.preventDefault();
             fetch(event.target.href)
@@ -485,80 +461,73 @@ body[data-theme="light"] .top-navbar {
                 .then(data => {
                     botData = data;
                     Plotly.react('bot-graph', data.data, data.layout);
+                    showResponseMessage("Bottom graph view updated!");
                 });
         }
-        
-        // Scroll top graph to right on load
+
+        window.addEventListener('DOMContentLoaded', initializeTheme);
+
+        Plotly.newPlot('top-graph', topData.data, topData.layout);
+        Plotly.newPlot('mid-graph', midData.data, midData.layout);
+        Plotly.newPlot('bot-graph', botData.data, botData.layout);
+
+        flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+            defaultDate: "{{ start_date }}",
+            maxDate: "{{ end_date }}"
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+            defaultDate: "{{ end_date }}",
+            minDate: "{{ start_date }}"
+        });
+
+        flatpickr("#selectedDate", {
+            dateFormat: "Y-m-d",
+            defaultDate: "{{ selected_date }}",
+            maxDate: "today"
+        });
+
+        // Top Graph Update
+        document.getElementById('dateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            fetch('/', {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTopData = JSON.parse(doc.getElementById('top-graph').getAttribute('data-plot'));
+                Plotly.react('top-graph', newTopData.data, newTopData.layout);
+                showResponseMessage("Top graph updated successfully!");
+            });
+        });
+
+        // Mid Graph Update
+        document.getElementById('dateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            fetch('/', {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newMidData = JSON.parse(doc.getElementById('mid-graph').getAttribute('data-plot'));
+                Plotly.react('mid-graph', newMidData.data, newMidData.layout);
+                showResponseMessage("Mid graph updated successfully!");
+            });
+        });
+
         window.onload = () => {
             document.querySelector('.scroll-x-only').scrollLeft = 10000;
         };
-        // Initialize date pickers
-    flatpickr("#startDate", {
-        dateFormat: "Y-m-d",
-        defaultDate: "{{ start_date }}",
-        maxDate: "{{ end_date }}"
-    });
-    
-    flatpickr("#endDate", {
-        dateFormat: "Y-m-d",
-        defaultDate: "{{ end_date }}",
-        minDate: "{{ start_date }}"
-    });
-    
-    // Update the mid graph when dates change
-    document.getElementById('dateForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('/', {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            // Parse the new HTML and update the mid graph
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newMidData = JSON.parse(doc.getElementById('mid-graph').getAttribute('data-plot'));
-            Plotly.react('mid-graph', newMidData.data, newMidData.layout);
-        });
-    });
-     // Initialize date picker
-    flatpickr("#selectedDate", {
-        dateFormat: "Y-m-d",
-        defaultDate: "{{ selected_date }}",
-        maxDate: "today"
-    });
-
-    // Update the top graph when date changes
-    document.getElementById('dateForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('/', {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            // Parse the new HTML and update the top graph
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newTopData = JSON.parse(doc.getElementById('top-graph').getAttribute('data-plot'));
-            Plotly.react('top-graph', newTopData.data, newTopData.layout);
-        });
-    });
-    // Theme toggle functionality - ONLY KEEP THIS ONE
-    document.getElementById('themeToggle').addEventListener('click', () => {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', newTheme);
-        
-        // Update graphs with new theme
-        updateAllGraphs(newTheme === 'dark');
-    });
     </script>
 </body>
 </html>
