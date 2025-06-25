@@ -7,254 +7,101 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        /* ... (all your existing CSS remains unchanged) ... */
-         /* Theme toggle button styles */
-#themeToggle {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: inherit;
-    font: inherit;
+      :root {
+    --bg-dark: rgba(20, 20, 30, 0.7);
+    --bg-light: rgba(240, 240, 250, 0.7);
+    --text-dark: #ffffff;
+    --text-light: #333333;
+    --accent: #646cff;
+    --accent-hover: #535bf2;
+    --transition: all 0.3s ease;
+}
+
+body {
     margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: var(--text-dark);
+    transition: var(--transition);
 }
 
-#themeToggle:hover {
-    background: rgba(100, 108, 255, 0.1);
+body[data-theme="light"] {
+    background: linear-gradient(135deg, #e0e0f0 0%, #d0d0e0 100%);
+    color: var(--text-light);
+}
+
+.container {
+    padding: 2rem;
+    max-width: 100%;
+}
+
+.glass-panel {
+    background: rgba(30, 30, 50, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: var(--transition);
+}
+
+body[data-theme="light"] .glass-panel {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-top: 0;
+    font-weight: 500;
+}
+
+/* Scroll containers */
+.scroll-x-only {
+    overflow-x:auto;
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.normal-view {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Graph controls */
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.graph-buttons {
+    display: flex;
+    gap: 2rem;
+}
+
+button, .graph-buttons a {
+    padding: 0.5rem 1rem;
+    background: rgba(100, 108, 255, 0.2);
+    border: 1px solid var(--accent);
     border-radius: 8px;
-}
-
-.theme-icon {
-    font-size: 1.2rem;
-}
-
-.theme-label {
+    color: var(--accent);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
     font-size: 0.9rem;
 }
-        :root {
-            --bg-dark: rgba(20, 20, 30, 0.7);
-            --bg-light: rgba(240, 240, 250, 0.7);
-            --text-dark: #ffffff;
-            --text-light: #333333;
-            --accent: #646cff;
-            --accent-hover: #535bf2;
-            --transition: all 0.3s ease;
-        }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: var(--text-dark);
-            transition: var(--transition);
-        }
+button:hover, .graph-buttons a:hover {
+    background: rgba(100, 108, 255, 0.3);
+    border-color: var(--accent-hover);
+    color: var(--accent-hover);
+}
 
-        body[data-theme="light"] {
-            background: linear-gradient(135deg, #e0e0f0 0%, #d0d0e0 100%);
-            color: var(--text-light);
-        }
-
-        .container {
-            padding: 2rem;
-            max-width: 100%;
-        }
-
-        .glass-panel {
-            background: rgba(30, 30, 50, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        body[data-theme="light"] .glass-panel {
-            background: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            margin-top: 0;
-            font-weight: 500;
-        }
-
-        /* Scroll containers */
-        .scroll-x-only {
-            overflow-x:auto;
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 1rem;
-        }
-
-        .normal-view {
-            width: 100%;
-            overflow: hidden;
-        }
-
-        /* Graph controls */
-        .graph-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .graph-buttons {
-            
-            display: flex;
-            gap: 2rem;
-        }
-
-        button, .graph-buttons a {
-            padding: 0.5rem 1rem;
-            background: rgba(100, 108, 255, 0.2);
-            border: 1px solid var(--accent);
-            border-radius: 8px;
-            color: var(--accent);
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        button:hover, .graph-buttons a:hover {
-            background: rgba(100, 108, 255, 0.3);
-            border-color: var(--accent-hover);
-            color: var(--accent-hover);
-        }
-
-        /* Theme toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            z-index: 100;
-            background: rgba(100, 108, 255, 0.2);
-            border: 1px solid var(--accent);
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(100, 108, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        .theme-icon {
-            font-size: 1.5rem;
-        }
-        .date-range-selector {
-        display: flex;
-        align-items: center;
-    }
-    
-    .date-input-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .date-input {
-        padding: 0.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        color: var(--text-dark);
-        min-width: 120px;
-    }
-    
-    body[data-theme="light"] .date-input {
-        background: rgba(0, 0, 0, 0.05);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        color: var(--text-light);
-    }
-    
-    .date-submit {
-        padding: 0.5rem 1rem;
-        background: rgba(100, 108, 255, 0.2);
-        border: 1px solid var(--accent);
-        border-radius: 8px;
-        color: var(--accent);
-        cursor: pointer;
-        transition: var(--transition);
-    }
-    
-    .date-submit:hover {
-        background: rgba(100, 108, 255, 0.3);
-    }
-    .top-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: rgba(20, 20, 40, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .nav-logo img {
-            height: 40px;
-            width: auto;
-        }
-
-        .nav-logo h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-
-        .nav-menu a:hover {
-            background: rgba(100, 108, 255, 0.2);
-            color: var(--accent);
-        }
-
-        /* Adjust container to account for navbar */
-        .container {
-            padding-top: 1rem; /* Reduced from 2rem */
-        }
-
-        /* Move theme toggle down */
-        .theme-toggle {
-            top: 5rem; /* Adjusted from 1.5rem */
-        }
 /* Navbar styles */
 .top-navbar {
     display: flex;
@@ -263,17 +110,65 @@
     padding: 1rem 2rem;
     background: rgba(20, 20, 40, 0.8);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.nav-menu {
+body[data-theme="light"] .top-navbar {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-logo {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-/* Theme Toggle Button Styles */
-.theme-toggle-btn {
+.nav-logo img {
+    height: 40px;
+    width: auto;
+}
+
+.nav-logo h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+body[data-theme="light"] .nav-logo h1 {
+    color: var(--text-light);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-menu a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+body[data-theme="light"] .nav-menu a {
+    color: var(--text-light);
+}
+
+.nav-menu a:hover {
+    background: rgba(100, 108, 255, 0.2);
+    color: var(--accent);
+}
+
+/* Theme toggle button styles */
+#themeToggle {
     background: transparent;
     border: none;
     cursor: pointer;
@@ -283,12 +178,16 @@
     gap: 0.5rem;
     color: var(--text-dark);
     font: inherit;
-    border-radius: 8px;
-    transition: var(--transition);
+    margin: 0;
 }
 
-.theme-toggle-btn:hover {
-    background: rgba(100, 108, 255, 0.2);
+body[data-theme="light"] #themeToggle {
+    color: var(--text-light);
+}
+
+#themeToggle:hover {
+    background: rgba(100, 108, 255, 0.1);
+    border-radius: 8px;
 }
 
 .theme-icon {
@@ -299,36 +198,61 @@
     font-size: 0.9rem;
 }
 
-/* Light theme button colors */
-body[data-theme="light"] .theme-toggle-btn {
+/* Date range selector */
+.date-range-selector {
+    display: flex;
+    align-items: center;
+}
+
+.date-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-input {
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--text-dark);
+    min-width: 120px;
+}
+
+body[data-theme="light"] .date-input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     color: var(--text-light);
 }
 
-/* Active/hover states */
-#themeToggle:hover {
-    background: rgba(100, 108, 255, 0.1);
+.date-submit {
+    padding: 0.5rem 1rem;
+    background: rgba(100, 108, 255, 0.2);
+    border: 1px solid var(--accent);
     border-radius: 8px;
+    color: var(--accent);
+    cursor: pointer;
+    transition: var(--transition);
 }
 
-/* Light theme adjustments */
-body[data-theme="light"] .top-navbar {
-    background: rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+.date-submit:hover {
+    background: rgba(100, 108, 255, 0.3);
 }
-        /* ✅ Response Message Styling */
-        #responseMessage {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background-color: rgba(100, 108, 255, 0.9);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            z-index: 9999;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
+
+/* Response Message Styling */
+#responseMessage {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: rgba(100, 108, 255, 0.9);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
     </style>
 </head>
 <body>
